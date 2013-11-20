@@ -2,6 +2,7 @@
 #define DEFINES_H
 
 #define P8_26		(1 << 29)
+#define P8_16		(1 << 14)
 
 typedef enum
 {
@@ -20,6 +21,8 @@ typedef enum
 	ERR_NONE = 0,
 	ERR_OPEN_FILE,
 	ERR_MAP_FAIL,
+	ERR_READ_DHT,
+	ERR_NULL_POINTER,
 } status;
 
 #endif
