@@ -25,6 +25,7 @@
 								<option id="gnu.c.compiler.option.include.paths.973829057" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/inc}&quot;"/>
 								</option>
+								<option id="gnu.c.compiler.option.misc.other.74788949" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -std=gnu99" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1073707164" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.compiler.787935412" name="Cross G++ Compiler" superClass="cdt.managedbuild.tool.gnu.cross.cpp.compiler">
@@ -32,6 +33,7 @@
 								<option id="gnu.cpp.compiler.option.debugging.level.1324586727" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 							</tool>
 							<tool command="arm-linux-gnueabihf-gcc-4.8" id="cdt.managedbuild.tool.gnu.cross.c.linker.605908751" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker">
+								<option id="gnu.c.link.option.libs.1482716148" name="Libraries (-l)" superClass="gnu.c.link.option.libs"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.1670159776" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
