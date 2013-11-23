@@ -31,10 +31,13 @@ status gpio_init(void)
 			printf("Mapping memory for GPIO1 failed!\n");
 			RetVal = ERR_MAP_FAIL;
 		}
-		gpio1_oe = gpio1 + GPIO_OE;
-		gpio1_set = gpio1 + GPIO_SETDATAOUT;
-		gpio1_clear = gpio1 + GPIO_CLEARDATAOUT;
-		gpio1_in = gpio1 + GPIO_DATAIN;
+		else
+		{
+			gpio1_oe = gpio1 + GPIO_OE;
+			gpio1_set = gpio1 + GPIO_SETDATAOUT;
+			gpio1_clear = gpio1 + GPIO_CLEARDATAOUT;
+			gpio1_in = gpio1 + GPIO_DATAIN;
+		}
 	}
 	else
 	{
@@ -47,7 +50,14 @@ status gpio_init(void)
 
 void gpio_clean(void)
 {
-	close(file);
+	if(-1 != file)
+	{
+		close(file);
+	}
+	if(MAP_FAILED != gpio1)
+	{
+		munmap((void *)gpio1, GPIO_SIZE);
+	}
 }
 
 void set_pin_out(uint32_t pin)

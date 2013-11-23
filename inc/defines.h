@@ -23,6 +23,7 @@ typedef enum
 	ERR_MAP_FAIL,
 	ERR_READ_DHT,
 	ERR_NULL_POINTER,
+	ERR_READ_BMP,
 } status;
 
 #endif

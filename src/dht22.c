@@ -62,17 +62,13 @@ status dht22_read(float *temperature, float *humidity)
 						++i;
 					}
 				}
-				//printf("Przeszedlem\n");
 				usleep(10000);
-				//break;
 
 				for(i = 0; i < sizeof(data); ++i)
 				{
 					if(data[i] != 255)
 					{
 						if(data[i]) how1++;
-						//if(try == 0) printf("%d, %d, %d\n", i, data[i], cnt[i]);
-//						printf("%d, ", cnt[i]);
 					}
 					else
 					{
@@ -81,10 +77,8 @@ status dht22_read(float *temperature, float *humidity)
 					}
 				}
 				++try;
-				//printf("Proba %d, Bity: %d\n", try, how1);
 			}
 			value bits[42];
-			//printf("\n%d\n", sizeof(bits)/sizeof(value));
 			int j = 0;
 			for(i = 0; i < sizeof(data); ++i)
 			{
@@ -114,7 +108,6 @@ status dht22_read(float *temperature, float *humidity)
 		}
 		*temperature = (float)temp/10;
 		*humidity = (float)hum/10;
-		printf("T: %.1f *C, H: %.1f%, prog: %d\n", *temperature, *humidity, get_threshold(cnt, proper_data));
 	}
 	else
 	{
@@ -156,7 +149,7 @@ status dht22_read2(float *temperature, float *humidity)
 			last_state = read_pin(P8_26);
 			elapsed_time = end.tv_usec - start.tv_usec;
 		}
-		printf( "usec: %d, %d\n", elapsed_time, counter);
+		printf( "usec: %ld, %d\n", elapsed_time, counter);
 		usleep(1000);
 	}
 	else
@@ -172,7 +165,6 @@ uint16_t get_threshold(uint16_t *data, uint16_t size)
 	uint16_t threshold = 0, max = 0, min = 0xFFFF;
 	uint16_t i, j = 0;
 	uint16_t cnt[40] = {0, };
-	uint16_t *tab = NULL;
 
 	// Szukanie minimalnej i maksymalnej wartosci wystapienia jedynki
 	for(i = 4; i < size; i = i + 2)

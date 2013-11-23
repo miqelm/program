@@ -5,24 +5,38 @@
 #include "defines.h"
 #include "gpio.h"
 #include "dht22.h"
+#include "bmp085.h"
 
 int main(void)
 {
 	status RetVal = ERR_NONE;
-	float temperature, humidity;
+	float dht22_temperature, dht22_humidity;
+	float bmp85_temperature, bmp85_pressure;
 
 	RetVal = gpio_init();
-	if(ERR_NONE == RetVal)
+	while(ERR_NONE == RetVal)
 	{
-		RetVal = dht22_read(&temperature, &humidity);
-		while(1) dht22_read(&temperature, &humidity);
+		RetVal = dht22_read(&dht22_temperature, &dht22_humidity);
 		if(ERR_NONE == RetVal)
 		{
-			//printf("T: %.1f *C, H: %.1f%\n", temperature, humidity);
+			RetVal = bmp085_read(&bmp85_temperature, &bmp85_pressure);
+			if(ERR_NONE == RetVal)
+			{
+				printf("DHT-22: T: %.1f *C, H: %.1f%%\n", dht22_temperature, dht22_humidity);
+				printf("BMP085: T: %.1f *C, H: %.2f hPa\n", bmp85_temperature, bmp85_pressure);
+			}
+			else
+			{
+				RetVal = ERR_READ_BMP;
+			}
 		}
 		else
-		gpio_clean();
+		{
+			RetVal = ERR_READ_DHT;
+		}
+		sleep(1);
 	}
+	gpio_clean();
 
 	return RetVal;
 }
