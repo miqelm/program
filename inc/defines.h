@@ -4,7 +4,7 @@
 #define P8_26						(1 << 29)
 #define P8_16						(1 << 14)
 
-#define DELAY_BETWEEN_MEASURMENTS 	(60)
+#define DELAY_BETWEEN_MEASURMENTS 	(600)
 
 #define MYSQL_ADDRESS				("mysql.agh.edu.pl")
 #define MYSQL_USER					("makam")
