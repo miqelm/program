@@ -6,7 +6,11 @@
 #include "gpio.h"
 #include "dht22.h"
 #include "bmp085.h"
+#include "database.h"
 
+/******************************************************************************
+ * FUNCTION DEFINITIONS
+ *****************************************************************************/
 int main(void)
 {
 	status RetVal = ERR_NONE;
@@ -22,8 +26,15 @@ int main(void)
 			RetVal = bmp085_read(&bmp85_temperature, &bmp85_pressure);
 			if(ERR_NONE == RetVal)
 			{
-				printf("DHT-22: T: %.1f *C, H: %.1f%%\n", dht22_temperature, dht22_humidity);
-				printf("BMP085: T: %.1f *C, H: %.2f hPa\n", bmp85_temperature, bmp85_pressure);
+				RetVal = add_measurments((dht22_temperature + bmp85_temperature)/2, dht22_humidity, bmp85_pressure);
+				if(ERR_NONE == RetVal)
+				{
+
+				}
+				else
+				{
+					RetVal = ERR_ADD_DATABASE;
+				}
 			}
 			else
 			{
@@ -34,7 +45,7 @@ int main(void)
 		{
 			RetVal = ERR_READ_DHT;
 		}
-		sleep(1);
+		sleep(DELAY_BETWEEN_MEASURMENTS);
 	}
 	gpio_clean();
 

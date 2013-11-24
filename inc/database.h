@@ -1,6 +1,9 @@
-#ifndef MYSQL
-#define MYSQL
+#ifndef DATABASE
+#define DATABASE
 
-int database(void);
+/******************************************************************************
+ * FUNCTION PROTOTYPES
+ *****************************************************************************/
+status add_measurments(float temperature, float humidity, float pressure);
 
 #endif
