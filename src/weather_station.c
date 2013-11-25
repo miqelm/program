@@ -26,12 +26,13 @@ int main(void)
 			RetVal = bmp085_read(&bmp85_temperature, &bmp85_pressure);
 			if(ERR_NONE == RetVal)
 			{
+				printf("%.1f*C, %.1f%%, %.1f*C, %.2f hPa\n",
+						dht22_temperature,
+						dht22_humidity,
+						bmp85_temperature,
+						bmp85_pressure);
 				RetVal = add_measurments((dht22_temperature + bmp85_temperature)/2, dht22_humidity, bmp85_pressure);
-				if(ERR_NONE == RetVal)
-				{
-
-				}
-				else
+				if(ERR_NONE != RetVal)
 				{
 					RetVal = ERR_ADD_DATABASE;
 				}
@@ -45,10 +46,16 @@ int main(void)
 		{
 			RetVal = ERR_READ_DHT;
 		}
-		sleep(DELAY_BETWEEN_MEASURMENTS);
+		if(ERR_NONE == RetVal)
+		{
+			sleep(DELAY_BETWEEN_MEASURMENTS);
+		}
+		else
+		{
+			check_retval(RetVal);
+		}
 	}
 	gpio_clean();
-	check_retval(RetVal);
 
 	return RetVal;
 }
