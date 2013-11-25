@@ -43,4 +43,6 @@ typedef enum
 	ERR_ADD_DATABASE,
 } status;
 
+void check_retval(status RetVal);
+
 #endif

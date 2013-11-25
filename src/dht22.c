@@ -104,7 +104,8 @@ status dht22_read(float *temperature, float *humidity)
 			bytes[2] = ((uint8_t)bits[18] << 7) | ((uint8_t)bits[19] << 6) | ((uint8_t)bits[20] << 5) | ((uint8_t)bits[21] << 4) | ((uint8_t)bits[22] << 3) | ((uint8_t)bits[23] << 2) | ((uint8_t)bits[24] << 1) | ((uint8_t)bits[25] << 0);
 			bytes[3] = ((uint8_t)bits[26] << 7) | ((uint8_t)bits[27] << 6) | ((uint8_t)bits[28] << 5) | ((uint8_t)bits[29] << 4) | ((uint8_t)bits[30] << 3) | ((uint8_t)bits[31] << 2) | ((uint8_t)bits[32] << 1) | ((uint8_t)bits[33] << 0);
 			bytes[4] = ((uint8_t)bits[34] << 7) | ((uint8_t)bits[35] << 6) | ((uint8_t)bits[36] << 5) | ((uint8_t)bits[37] << 4) | ((uint8_t)bits[38] << 3) | ((uint8_t)bits[39] << 2) | ((uint8_t)bits[40] << 1) | ((uint8_t)bits[41] << 0);
-			temp = ((uint16_t)bytes[2] << 8) | bytes[3];
+			temp = ((0x7F & (uint16_t)bytes[2] << 8)) | bytes[3];
+			if(bytes[2] & 0x80) temp *= -1;
 			hum = ((uint16_t)bytes[0] << 8) | bytes[1];
 			if(((bytes[0] + bytes[1] + bytes[2] + bytes[3]) & 0xFF) == bytes[4])
 			{

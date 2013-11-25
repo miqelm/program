@@ -48,6 +48,46 @@ int main(void)
 		sleep(DELAY_BETWEEN_MEASURMENTS);
 	}
 	gpio_clean();
+	check_retval(RetVal);
 
 	return RetVal;
+}
+
+void check_retval(status RetVal)
+{
+	switch(RetVal)
+	{
+		case ERR_OPEN_FILE:
+			printf("Blad otwarcia pliku!\n");
+			break;
+		case ERR_MAP_FAIL:
+			printf("Blad mapowania pamieci!\n");
+			break;
+		case ERR_READ_DHT:
+			printf("Blad odczytu DHT-22!\n");
+			break;
+		case ERR_NULL_POINTER:
+			printf("Blad, argument jest wskaznikiem NULL!\n");
+			break;
+		case ERR_READ_BMP:
+			printf("Blad odczytu BMP085!\n");
+			break;
+		case ERR_MYSQL_INIT:
+			printf("Blad inicjalizacji MySQL!\n");
+			break;
+		case ERR_MYSQL_CONN:
+			printf("Blad polaczenie MySQL!\n");
+			break;
+		case ERR_MYSQL_QUERY:
+			printf("Blad zapytania MySQL!\n");
+			break;
+		case ERR_MYSQL_STORE:
+			printf("Blad przechwycenia MySQL!\n");
+			break;
+		case ERR_ADD_DATABASE:
+			printf("Blad dodania bazy MySQL!\n");
+			break;
+		default:
+			break;
+	}
 }
