@@ -41,6 +41,7 @@ typedef enum
 	ERR_MYSQL_QUERY,
 	ERR_MYSQL_STORE,
 	ERR_ADD_DATABASE,
+	ERR_IOCTL,
 } status;
 
 void check_retval(status RetVal);

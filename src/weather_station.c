@@ -19,11 +19,12 @@ int main(void)
 
 	RetVal = gpio_init();
 	while(ERR_NONE == RetVal)
+//	if(ERR_NONE == RetVal)
 	{
 		RetVal = dht22_read(&dht22_temperature, &dht22_humidity);
 		if(ERR_NONE == RetVal)
 		{
-			RetVal = bmp085_read(&bmp85_temperature, &bmp85_pressure);
+			RetVal = bmp085_read2(&bmp85_temperature, &bmp85_pressure);
 			if(ERR_NONE == RetVal)
 			{
 				printf("%.1f*C, %.1f%%, %.1f*C, %.2f hPa\n",
@@ -31,7 +32,7 @@ int main(void)
 						dht22_humidity,
 						bmp85_temperature,
 						bmp85_pressure);
-				RetVal = add_measurments((dht22_temperature + bmp85_temperature)/2, dht22_humidity, bmp85_pressure);
+//				RetVal = add_measurments((dht22_temperature + bmp85_temperature)/2, dht22_humidity, bmp85_pressure);
 				if(ERR_NONE != RetVal)
 				{
 					RetVal = ERR_ADD_DATABASE;
@@ -48,7 +49,7 @@ int main(void)
 		}
 		if(ERR_NONE == RetVal)
 		{
-			sleep(DELAY_BETWEEN_MEASURMENTS);
+//			sleep(DELAY_BETWEEN_MEASURMENTS);
 		}
 		else
 		{
@@ -93,6 +94,9 @@ void check_retval(status RetVal)
 			break;
 		case ERR_ADD_DATABASE:
 			printf("Blad dodania bazy MySQL!\n");
+			break;
+		case ERR_IOCTL:
+			printf("Blad wykonania IOCTL!\n");
 			break;
 		default:
 			break;
