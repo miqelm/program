@@ -10,6 +10,11 @@
 #include "dht22.h"
 
 /******************************************************************************
+ * STATIC FUNCTION PROTOTYPES
+ *****************************************************************************/
+static uint16_t get_threshold(uint16_t data[], uint16_t size);
+
+/******************************************************************************
  * FUNCTION DEFINITIONS
  *****************************************************************************/
 status dht22_read(float *temperature, float *humidity)
@@ -129,7 +134,7 @@ status dht22_read2(float *temperature, float *humidity)
 	status RetVal = ERR_READ_DHT;
 	long int elapsed_time;
 	struct timeval start, end;
-	value state, last_state = HIGH;
+	value last_state = HIGH;
 	int counter = 0;
 
 	if((NULL != temperature) && (NULL != humidity))
@@ -167,7 +172,10 @@ status dht22_read2(float *temperature, float *humidity)
 	return RetVal;
 }
 
-uint16_t get_threshold(uint16_t *data, uint16_t size)
+/******************************************************************************
+ * STATIC FUNCTION DEFINITIONS
+ *****************************************************************************/
+static uint16_t get_threshold(uint16_t *data, uint16_t size)
 {
 	uint16_t threshold = 0, max = 0, min = 0xFFFF;
 	uint16_t i, j = 0;
