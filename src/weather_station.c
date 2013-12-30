@@ -34,15 +34,11 @@ int main(void)
 						dht22_humidity,
 						bmp85_temperature,
 						bmp85_pressure);
-				RetVal = add_measurments((dht22_temperature + bmp85_temperature)/2, dht22_humidity, bmp85_pressure);
+				RetVal = add_measurments(dht22_temperature, dht22_humidity, bmp85_temperature, bmp85_pressure);
 				if(ERR_NONE != RetVal)
 				{
 					RetVal = ERR_ADD_DATABASE;
 				}
-			}
-			else
-			{
-				RetVal = ERR_READ_BMP;
 			}
 		}
 		else
@@ -51,7 +47,8 @@ int main(void)
 		}
 		if(ERR_NONE == RetVal)
 		{
-			sleep(DELAY_BETWEEN_MEASURMENTS);
+//			sleep(DELAY_BETWEEN_MEASURMENTS);
+//			sleep(10);
 		}
 		else
 		{

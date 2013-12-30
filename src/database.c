@@ -11,7 +11,7 @@
 /******************************************************************************
  * FUNCTION DEFINITIONS
  *****************************************************************************/
-status add_measurments(float temperature, float humidity, float pressure)
+status add_measurments(float dht22_temperature, float dht22_humidity, float bmp85_temperature, float bmp85_pressure)
 {
 	status RetVal = ERR_NONE;
 	char query[QUERY_LENGTH];
@@ -29,13 +29,14 @@ status add_measurments(float temperature, float humidity, float pressure)
 			timeinfo = localtime (&rawtime);
 			strftime (date_str, DATE_LENGTH, "%Y-%m-%d", timeinfo);
 			strftime (time_str, TIME_LENGTH, "%H:%M:%S", timeinfo);
-			snprintf(query, QUERY_LENGTH, "INSERT INTO %s VALUES('%s', '%s', %.1f, %.2f, %.1f)",
+			snprintf(query, QUERY_LENGTH, "INSERT INTO %s VALUES('%s', '%s', %.1f, %.2f, %.1f, %.1f)",
 										MYSQL_TABLE_NAME,
 										date_str,
 										time_str,
-										temperature,
-										pressure,
-										humidity);
+										dht22_temperature,
+										bmp85_pressure,
+										dht22_humidity,
+										bmp85_temperature);
 			if(0 != mysql_query(connection, query))
 			{
 				RetVal = ERR_MYSQL_QUERY;

@@ -13,16 +13,16 @@
 /******************************************************************************
  * STATIC FUNCTION PROTOTYPES
  *****************************************************************************/
-static uint16_t read_i2c(int file, uint8_t reg);
-static uint16_t read_raw_temp(int file);
-static uint32_t read_raw_pres(int file);
-static void read_compensated_data(uint16_t raw_temp,
-								  uint32_t raw_pres,
+static long read_i2c(int file, uint8_t reg);
+static long read_raw_temp(int file);
+static long read_raw_pres(int file);
+static void read_compensated_data(long raw_temp,
+								  long raw_pres,
 								  uint16_t *compensation_table,
 								  float *temp,
 								  float *pres);
 static status check_compensation_data(uint16_t *compensation_table);
-static status get_compensation_data(int file, uint16_t *compensation_table);
+static status get_calibration_data(int file, uint16_t *compensation_table);
 
 /******************************************************************************
  * FUNCTION DEFINITIONS
@@ -79,7 +79,7 @@ status bmp085_read2(float *temperature, float *pressure)
 		{
 			if(-1 != ioctl(file, I2C_SLAVE, BMP085_ADDRESS))
 			{
-				RetVal = get_compensation_data(file, compensation_table);
+				RetVal = get_calibration_data(file, compensation_table);
 				if(ERR_NONE == RetVal)
 				{
 					raw_temp = read_raw_temp(file);
@@ -105,34 +105,35 @@ status bmp085_read2(float *temperature, float *pressure)
 	{
 		RetVal = ERR_NULL_POINTER;
 	}
+	sleep(1);
 	return RetVal;
 }
 
 /******************************************************************************
  * STATIC FUNCTION DEFINITIONS
  *****************************************************************************/
-static uint16_t read_i2c(int file, uint8_t reg)
+static long read_i2c(int file, uint8_t reg)
 {
-	uint16_t RetVal;
+	long RetVal;
 	RetVal = i2c_smbus_read_word_data(file, reg);
 	RetVal = ((0xFF & RetVal) << 8) | ((0xFF00 & RetVal) >> 8);
 	return RetVal;
 }
 
-static uint16_t read_raw_temp(int file)
+static long read_raw_temp(int file)
 {
-	uint16_t RetVal;
+	long RetVal;
 	i2c_smbus_write_byte_data(file, TEMP_PRES_REQUEST_ADDR, TEMP_REQUEST_COMMAND);
-	usleep(50000); // wait at least 4,5 ms
+	usleep(30000); // wait at least 4,5 ms
 	RetVal = read_i2c(file, TEMP_PRES_ADDRESS);
 	return RetVal;
 }
 
-static uint32_t read_raw_pres(int file)
+static long read_raw_pres(int file)
 {
-	uint32_t RetVal;
+	long RetVal;
 	i2c_smbus_write_byte_data(file, TEMP_PRES_REQUEST_ADDR, PRES_REQUEST_COMMAND + ((uint8_t)BMP085_MODE << 6));
-	usleep(50000); // wait at least 4,5 ms
+	usleep(30000); // wait at least 4,5 ms
 	RetVal = (uint32_t)i2c_smbus_read_byte_data(file, TEMP_PRES_ADDRESS) << 16;
 	RetVal |= (uint32_t)i2c_smbus_read_byte_data(file, TEMP_PRES_ADDRESS + 1) << 8;
 	RetVal |= (uint32_t)i2c_smbus_read_byte_data(file, TEMP_PRES_ADDRESS + 2);
@@ -140,39 +141,47 @@ static uint32_t read_raw_pres(int file)
 	return RetVal;
 }
 
-static void read_compensated_data(uint16_t raw_temp,
-								  uint32_t raw_pres,
+static void read_compensated_data(long raw_temp,
+								  long raw_pres,
 								  uint16_t *compensation_table,
 								  float *temp,
 								  float *pres)
 {
-	long X1 = (raw_temp - AC6) * AC5 / (1 << 15);
-	long X2 = (short) MC * (1 << 11) / (X1 + (short) MD);
-	long B5 = X1 + X2;
-	*temp = (float)((B5 + 8) / (1 << 4)) / 10;
-	long B6 = B5 - 4000;
-	X1 = (B2 * (B6 * B6 / (1 << 12))) / (1 << 11);
-	X2 = AC2 * B6 / (1 << 11);
-	long X3 = X1 + X2;
-	long B3 = (((AC1 * 4 + X3) << BMP085_MODE) + 2) / 4;
-	X1 = AC3 * B6 / (1 << 13);
-	X2 = (B1 * (B6 * B6 / (1 << 12))) / (1 << 16);
-	X3 = ((X1 + X2) + 2) / 4;
-	unsigned long B4 = AC4 * ((unsigned long)(X3 + 32768)) / (1 << 15);
-	unsigned long B7 = ((unsigned long)raw_pres - B3) * (50000 >> BMP085_MODE);
-	long p;
-	if(B7 < 0x80000000)
-	{
-		p = (B7 * 2) / B4;
-	}
-	else
-	{
-		p = (B7 / B4) * 2;
-	}
-	X1 = (p / (1 << 8)) * (p / (1 << 8));
-	X1 = (X1 * 3038) / (1 << 16);
-	X2 = (-7357 * p) / (1 << 16);
-	*pres = (float)(p + (X1 + X2 + 3791) / (1 << 4)) / 100;
+	long ut = raw_temp;
+	long up = raw_pres;
+	long x1, x2, b5, b6, x3, b3, p;
+	unsigned long b4, b7;
+
+	short ac1 = AC1;
+	short ac2 = AC2;
+	short ac3 = AC3;
+	unsigned short ac4 = AC4;
+	unsigned short ac5 = AC5;
+	unsigned short ac6 = AC6;
+	short b1 = B1;
+	short b2 = B2;
+	short mb = MB;
+	short mc = MC;
+	short md = MD;
+	x1 = ((long)ut - ac6) * ac5 >> 15;
+	x2 = ((long) mc << 11) / (x1 + md);
+	b5 = x1 + x2;
+	*temp = (float)((b5 + 8) >> 4) / 10;
+	b6 = b5 - 4000;
+	x1 = (b2 * (b6 * b6 >> 12)) >> 11;
+	x2 = ac2 * b6 >> 11;
+	x3 = x1 + x2;
+	b3 = (((int32_t) ac1 * 4 + x3) + 2)/4;
+	x1 = ac3 * b6 >> 13;
+	x2 = (b1 * (b6 * b6 >> 12)) >> 16;
+	x3 = ((x1 + x2) + 2) >> 2;
+	b4 = (ac4 * (unsigned long) (x3 + 32768)) >> 15;
+	b7 = ((unsigned long) up - b3) * (50000 >> BMP085_MODE);
+	p = b7 < 0x80000000 ? (b7 * 2) / b4 : (b7 / b4) * 2;
+	x1 = (p >> 8) * (p >> 8);
+	x1 = (x1 * 3038) >> 16;
+	x2 = (-7357 * p) >> 16;
+	*pres = (float)(p + ((x1 + x2 + 3791) >> 4)) / 100;
 }
 
 static status check_compensation_data(uint16_t *compensation_table)
@@ -189,7 +198,7 @@ static status check_compensation_data(uint16_t *compensation_table)
 	return RetVal;
 }
 
-static status get_compensation_data(int file, uint16_t *compensation_table)
+static status get_calibration_data(int file, uint16_t *compensation_table)
 {
 	status RetVal;
 	AC1 = read_i2c(file, AC1_ADDRESS);

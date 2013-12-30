@@ -22,11 +22,16 @@ echo "Stacja pogody - pomiary\n";
 if($num_data > 0)
 {
        echo "\t<table border = 1>\n";
-       echo "\t\t<tr>\n";
-       echo "\t\t\t<td>Data</td>\n";
-       echo "\t\t\t<td>Godzina</td>\n";
+       echo "\t\t<tr align = center>\n";
+       echo "\t\t\t<td rowspan = 2>Data</td>\n";
+       echo "\t\t\t<td rowspan = 2>Godzina</td>\n";
+       echo "\t\t\t<td colspan = 2>DHT-22</td>\n";
+       echo "\t\t\t<td colspan = 2>BMP085</td>\n";
+       echo "\t\t</tr>\n";
+       echo "\t\t<tr align = center>\n";
        echo "\t\t\t<td>Temperatura</td>\n";
        echo "\t\t\t<td>Wilgotność</td>\n";
+       echo "\t\t\t<td>Temperatura</td>\n";
        echo "\t\t\t<td>Ciśnienie</td>\n";
        echo "\t\t</tr>\n";
 }
@@ -35,16 +40,18 @@ for ($i = $num_data - 1; $i >= 0; $i--)
 {
        $date = mysql_result($result, $i, "date");
        $time = mysql_result($result, $i, "time");
-       $temperature = mysql_result($result, $i, "temperature");
-       $humidity = mysql_result($result, $i, "humidity");
-       $pressure = mysql_result($result, $i, "pressure");
+       $dht22_temperature = mysql_result($result, $i, "dht22_temperature");
+       $dht22_humidity = mysql_result($result, $i, "dht22_humidity");
+       $bmp085_temperature = mysql_result($result, $i, "bmp085_temperature");
+       $bmp085_pressure = mysql_result($result, $i, "bmp085_pressure");
 
-       echo "\t\t<tr>\n";
+       echo "\t\t<tr align = center>\n";
        echo "\t\t\t<td>$date</td>\n";
        echo "\t\t\t<td>$time</td>\n";
-       echo "\t\t\t<td>$temperature &deg;C</td>\n";
-       echo "\t\t\t<td>$humidity%</td>\n";
-       echo "\t\t\t<td>$pressure hPa</td>\n";
+       echo "\t\t\t<td>$dht22_temperature &deg;C</td>\n";
+       echo "\t\t\t<td>$dht22_humidity%</td>\n";
+       echo "\t\t\t<td>$bmp085_temperature &deg;C</td>\n";
+       echo "\t\t\t<td>$bmp085_pressure hPa</td>\n";
        echo "\t\t</tr>\n";
 }
 
