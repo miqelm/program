@@ -29,16 +29,12 @@ int main(void)
 			RetVal = bmp085_read2(&bmp85_temperature, &bmp85_pressure);
 			if(ERR_NONE == RetVal)
 			{
-				printf("%.1f*C, %.1f%%, %.1f*C, %.2f hPa\n",
+				printf("%.1f °C, %.1f %%, %.1f °C, %.2f hPa\n",
 						dht22_temperature,
 						dht22_humidity,
 						bmp85_temperature,
 						bmp85_pressure);
-				RetVal = add_measurments(dht22_temperature, dht22_humidity, bmp85_temperature, bmp85_pressure);
-				if(ERR_NONE != RetVal)
-				{
-					RetVal = ERR_ADD_DATABASE;
-				}
+//				RetVal = add_measurments(dht22_temperature, dht22_humidity, bmp85_temperature, bmp85_pressure);
 			}
 		}
 		else
@@ -92,7 +88,7 @@ void check_retval(status RetVal)
 			printf("Blad przechwycenia MySQL!\n");
 			break;
 		case ERR_ADD_DATABASE:
-			printf("Blad dodania bazy MySQL!\n");
+			printf("Blad dodania do bazy MySQL!\n");
 			break;
 		case ERR_IOCTL:
 			printf("Blad wykonania IOCTL!\n");
