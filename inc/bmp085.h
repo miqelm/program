@@ -46,6 +46,5 @@
  * FUNCTION PROTOTYPES
  *****************************************************************************/
 status bmp085_read(float *temperature, float *pressure);
-status bmp085_read2(float *temperature, float *pressure);
 
 #endif

@@ -1,10 +1,16 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+/******************************************************************************
+ * GLOBAL VARIABLES
+ *****************************************************************************/
+extern unsigned long delay_between_measurements;
+
+/******************************************************************************
+ * MACRODEFINITIONS
+ *****************************************************************************/
 #define P8_26						(1 << 29)
 #define P8_16						(1 << 14)
-
-#define DELAY_BETWEEN_MEASURMENTS 	(600)
 
 #define MYSQL_ADDRESS				("mysql.agh.edu.pl")
 #define MYSQL_USER					("makam")
@@ -16,6 +22,9 @@
 #define TIME_LENGTH					(9)
 #define QUERY_LENGTH				(80)
 
+/******************************************************************************
+ * TYPEDEFS
+ *****************************************************************************/
 typedef enum
 {
 	INPUT = 0,
@@ -39,12 +48,16 @@ typedef enum
 	ERR_MYSQL_INIT,
 	ERR_MYSQL_CONN,
 	ERR_MYSQL_QUERY,
+	ERR_MYSQL_GET_DATA,
 	ERR_MYSQL_STORE,
 	ERR_ADD_DATABASE,
 	ERR_IOCTL,
 	ERR_COMPENSATION_DATA,
 } status;
 
+/******************************************************************************
+ * FUNCTION PROTOTYPES
+ *****************************************************************************/
 void check_retval(status RetVal);
 
 #endif

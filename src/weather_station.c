@@ -12,6 +12,11 @@
 #include "database.h"
 
 /******************************************************************************
+ * GLOBAL VARIABLES
+ *****************************************************************************/
+unsigned long delay_between_measurements = 0;
+
+/******************************************************************************
  * FUNCTION DEFINITIONS
  *****************************************************************************/
 int main(void)
@@ -26,7 +31,7 @@ int main(void)
 		RetVal = dht22_read(&dht22_temperature, &dht22_humidity);
 		if(ERR_NONE == RetVal)
 		{
-			RetVal = bmp085_read2(&bmp85_temperature, &bmp85_pressure);
+			RetVal = bmp085_read(&bmp85_temperature, &bmp85_pressure);
 			if(ERR_NONE == RetVal)
 			{
 				printf("%.1f °C, %.1f %%, %.1f °C, %.2f hPa\n",
@@ -34,7 +39,7 @@ int main(void)
 						dht22_humidity,
 						bmp85_temperature,
 						bmp85_pressure);
-//				RetVal = add_measurments(dht22_temperature, dht22_humidity, bmp85_temperature, bmp85_pressure);
+				RetVal = add_measurments(dht22_temperature, dht22_humidity, bmp85_temperature, bmp85_pressure);
 			}
 		}
 		else
@@ -43,8 +48,7 @@ int main(void)
 		}
 		if(ERR_NONE == RetVal)
 		{
-//			sleep(DELAY_BETWEEN_MEASURMENTS);
-//			sleep(10);
+			sleep(delay_between_measurements);
 		}
 		else
 		{
@@ -95,6 +99,9 @@ void check_retval(status RetVal)
 			break;
 		case ERR_COMPENSATION_DATA:
 			printf("Blad danych kompensacyjnych!\n");
+			break;
+		case ERR_MYSQL_GET_DATA:
+			printf("Blad pobrania danych z bazy MySQL!\n");
 			break;
 		default:
 			break;

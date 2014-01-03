@@ -12,13 +12,53 @@ $address = 'mysql.agh.edu.pl';
 
  mysql_connect($address, $user, $password);
 @mysql_select_db($database) or die("Nie udało się wybrać bazy danych");
+echo "Stacja pogody - pomiary\n";
+
+if(isset($_POST["delay"]))
+{
+	$delay = $_POST["delay"];
+	$change_delay = "UPDATE  `makam`.`weather_config` SET  `delay` =  '$delay' WHERE  `weather_config`.`index` =0";
+	$result = mysql_query($change_delay);
+	header('Location: index.php');
+}
 
 $measure= "SELECT * FROM weather"; // Zapytanie do bazy danych
+$config = "SELECT delay from weather_config";
+
+$result = mysql_query($config);
+$delay = mysql_result($result, 0);
+
+echo "<form action=\"index.php\" method=\"get\">\n";
+echo "Początkowa data<br>\n";
+echo "Godzina: <input name=\"start_hour\" size=\"2\" maxlength=\"2\" />\n";
+echo "Minuta: <input name=\"start_minute\" size=\"2\" maxlength=\"2\" />\n";
+echo "Dzień: <input name=\"start_day\" size=\"2\" maxlength=\"2\" />\n";
+echo "Miesiąc: <input name=\"start_month\" size=\"2\" maxlength=\"2\" />\n";
+echo "Rok: <input name=\"start_year\" size=\"4\" maxlength=\"4\" />\n<br>\n";
+echo "Końcowa data<br>\n";
+echo "Godzina: <input name=\"end_hour\" size=\"2\" maxlength=\"2\" />\n";
+echo "Minuta: <input name=\"end_minute\" size=\"2\" maxlength=\"2\" />\n";
+echo "Dzień: <input name=\"end_day\" size=\"2\" maxlength=\"2\" />\n";
+echo "Miesiąc: <input name=\"end_month\" size=\"2\" maxlength=\"2\" />\n";
+echo "Rok: <input name=\"end_year\" size=\"4\" maxlength=\"4\" />\n";
+echo "<br>\n<input type=\"submit\" value=\"Zaaktualizuj dane\" />\n";
+echo "</form>\n";
+
+echo "<form action=\"index.php\" method=\"post\">\n";
+echo "\tOpoznienie: <select name=\"delay\" value=$delay>\n";
+for ($i = 0; $i <= 600; $i++)
+{
+	if($i != $delay) echo "<option>$i</option>";
+	else echo "<option selected=\"selected\">$i</option>";
+	if($i % 3 == 0) echo "\n";
+}
+echo "\n\t</select>\n";
+echo "\t<input type=\"submit\" value=\"Zaaktualizuj opóźnienie\" />\n";
+echo "</form>\n";
 
 $result = mysql_query($measure); // wykonanie zapytania oraz zwrocenie wynikow
 $num_data = mysql_numrows($result); // Sprawdzenie ilosci wierszy
 
-echo "Stacja pogody - pomiary\n";
 if($num_data > 0)
 {
        echo "\t<table border = 1>\n";
