@@ -28,6 +28,7 @@ status dht22_read(float *temperature, float *humidity)
 	uint8_t try = 0;
 	uint16_t proper_data = 0;
 
+	int probes = 0;
 	int counter = 0;
 	uint16_t i = 0;
 	value last_state;
@@ -35,10 +36,11 @@ status dht22_read(float *temperature, float *humidity)
 	int how1 = 0;
 	if((NULL != temperature) && (NULL != humidity))
 	{
-		while(ERR_NONE != RetVal)
+		while((ERR_NONE != RetVal) && (MAX_DHT22_PROBES > probes))
 		{
-			while(how1 < 42)
+			while((how1 < 42) && (MAX_DHT22_PROBES > probes))
 			{
+				++probes;
 				for(int a = 0; a < sizeof(data); ++a)
 				{
 					data[a] = 0xFF;
@@ -48,9 +50,8 @@ status dht22_read(float *temperature, float *humidity)
 				i = 0;
 				counter = 0;
 				set_pin_out(P8_26);
-				// Initialize DHT22 sensor
 				set_pin_high(P8_26);
-				usleep(500000);  // 500 ms
+				usleep(500000);
 				set_pin_low(P8_26);
 				usleep(20000);
 
@@ -118,57 +119,20 @@ status dht22_read(float *temperature, float *humidity)
 			}
 			how1 = 0;
 		}
-		*temperature = (float)temp/10;
-		*humidity = (float)hum/10;
+		if(MAX_DHT22_PROBES > probes)
+		{
+			*temperature = (float)temp/10;
+			*humidity = (float)hum/10;
+		}
+		else
+		{
+			RetVal = ERR_READ_DHT;
+		}
 	}
 	else
 	{
 		RetVal = ERR_NULL_POINTER;
 	}
-
-	return RetVal;
-}
-
-status dht22_read2(float *temperature, float *humidity)
-{
-	status RetVal = ERR_READ_DHT;
-	long int elapsed_time;
-	struct timeval start, end;
-	value last_state = HIGH;
-	int counter = 0;
-
-	if((NULL != temperature) && (NULL != humidity))
-	{
-		set_pin_out(P8_26);
-		// Initialize DHT22 sensor
-		set_pin_high(P8_26);
-		usleep(500000);  // 500 ms
-		set_pin_low(P8_26);
-		usleep(20000);
-
-		set_pin_in(P8_26);
-
-		while (HIGH == read_pin(P8_26))
-		{
-			//usleep(1);
-		}
-
-		while(counter < 300)
-		{
-			gettimeofday( &start, NULL );
-			while (read_pin(P8_26) == last_state) ++counter;
-			gettimeofday( &end, NULL );
-			last_state = read_pin(P8_26);
-			elapsed_time = end.tv_usec - start.tv_usec;
-		}
-		printf( "usec: %ld, %d\n", elapsed_time, counter);
-		usleep(1000);
-	}
-	else
-	{
-		RetVal = ERR_NULL_POINTER;
-	}
-
 	return RetVal;
 }
 

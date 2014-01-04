@@ -12,6 +12,8 @@ extern unsigned long delay_between_measurements;
 #define P8_26						(1 << 29)
 #define P8_16						(1 << 14)
 
+#define MAX_DHT22_PROBES			(50)
+
 #define MYSQL_ADDRESS				("mysql.agh.edu.pl")
 #define MYSQL_USER					("makam")
 #define MYSQL_PASSWORD				("28CkcBUj")
