@@ -67,7 +67,6 @@ status bmp085_read(float *temperature, float *pressure)
 	{
 		RetVal = ERR_NULL_POINTER;
 	}
-	sleep(1);
 	return RetVal;
 }
 

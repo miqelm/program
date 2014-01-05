@@ -36,6 +36,7 @@
 							<tool command="arm-linux-gnueabihf-gcc-4.8" id="cdt.managedbuild.tool.gnu.cross.c.linker.605908751" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker">
 								<option id="gnu.c.link.option.libs.1482716148" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="mysqlclient"/>
+									<listOptionValue builtIn="false" value="m"/>
 									<listOptionValue builtIn="false" value="z"/>
 								</option>
 								<option id="gnu.c.link.option.ldflags.1045342636" name="Linker flags" superClass="gnu.c.link.option.ldflags" value="" valueType="string"/>

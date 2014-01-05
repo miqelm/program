@@ -14,6 +14,14 @@ $address = 'mysql.agh.edu.pl';
 @mysql_select_db($database) or die("Nie udało się wybrać bazy danych");
 echo "Stacja pogody - pomiary\n";
 
+$measure = "SELECT * FROM weather"; // Sprawdzenie calkowitej ilosci wierszy
+$result = mysql_query($measure); // wykonanie zapytania oraz zwrocenie wynikow
+$total_data = mysql_numrows($result); // Sprawdzenie ilosci wierszy
+$rstart_date = explode("-", mysql_result($result, 0, "date"));
+$rstart_time = explode(":", mysql_result($result, 0, "time"));
+$rend_date = explode("-", mysql_result($result, $total_data - 1, "date"));
+$rend_time = explode(":", mysql_result($result, $total_data - 1, "time"));
+
 if(isset($_POST["delay"]))
 {
 	$delay = $_POST["delay"];
@@ -21,26 +29,60 @@ if(isset($_POST["delay"]))
 	$result = mysql_query($change_delay);
 	header('Location: index.php');
 }
-
-$measure= "SELECT * FROM weather"; // Zapytanie do bazy danych
+if((isset($_GET["start_hour"])) and
+	(isset($_GET["start_minute"])) and
+	(isset($_GET["start_second"])) and
+	(isset($_GET["start_day"])) and
+	(isset($_GET["start_month"])) and
+	(isset($_GET["start_year"])) and
+	(isset($_GET["end_hour"])) and
+	(isset($_GET["end_minute"])) and
+	(isset($_GET["end_second"])) and
+	(isset($_GET["end_day"])) and
+	(isset($_GET["end_month"])) and
+	(isset($_GET["end_year"]))	
+	)
+{
+	$start_date_str = $_GET["start_year"]."-".$_GET["start_month"]."-".$_GET["start_day"]." ".$_GET["start_hour"].":".$_GET["start_minute"].":".$_GET["start_second"];
+	$start_date = new DateTime($start_date_str);
+	$end_date_str = $_GET["end_year"]."-".$_GET["end_month"]."-".$_GET["end_day"]." ".$_GET["end_hour"].":".$_GET["end_minute"].":".$_GET["end_second"];
+	$end_date = new DateTime($end_date_st);
+	if($end_date >= $start_date)
+	{
+		$measure= "SELECT * FROM weather WHERE CONCAT(`date`,' ',`time`) >= '$start_date_str' and CONCAT(`date`,' ',`time`) <= '$end_date_str'"; // Zapytanie do bazy danych
+	}
+	else
+	{
+		die("Niepoprawna data");
+	}
+}
+else
+{
+	$measure= "SELECT * FROM weather"; // Zapytanie do bazy danych
+}
 $config = "SELECT delay from weather_config";
 
 $result = mysql_query($config);
 $delay = mysql_result($result, 0);
 
+$result = mysql_query($measure); // wykonanie zapytania oraz zwrocenie wynikow
+$num_data = mysql_numrows($result); // Sprawdzenie ilosci wierszy
+
 echo "<form action=\"index.php\" method=\"get\">\n";
 echo "Początkowa data<br>\n";
-echo "Godzina: <input name=\"start_hour\" size=\"2\" maxlength=\"2\" />\n";
-echo "Minuta: <input name=\"start_minute\" size=\"2\" maxlength=\"2\" />\n";
-echo "Dzień: <input name=\"start_day\" size=\"2\" maxlength=\"2\" />\n";
-echo "Miesiąc: <input name=\"start_month\" size=\"2\" maxlength=\"2\" />\n";
-echo "Rok: <input name=\"start_year\" size=\"4\" maxlength=\"4\" />\n<br>\n";
+echo "Godzina: <input name=\"start_hour\" size=\"2\" maxlength=\"2\" value=\"$rstart_time[0]\"/>\n";
+echo "Minuta: <input name=\"start_minute\" size=\"2\" maxlength=\"2\" value=\"$rstart_time[1]\"/>\n";
+echo "Sekunda: <input name=\"start_second\" size=\"2\" maxlength=\"2\" value=\"$rstart_time[2]\"/>\n";
+echo "Dzień: <input name=\"start_day\" size=\"2\" maxlength=\"2\" value=\"$rstart_date[2]\"/>\n";
+echo "Miesiąc: <input name=\"start_month\" size=\"2\" maxlength=\"2\" value=\"$rstart_date[1]\"/>\n";
+echo "Rok: <input name=\"start_year\" size=\"4\" maxlength=\"4\" value=\"$rstart_date[0]\"/>\n<br>\n";
 echo "Końcowa data<br>\n";
-echo "Godzina: <input name=\"end_hour\" size=\"2\" maxlength=\"2\" />\n";
-echo "Minuta: <input name=\"end_minute\" size=\"2\" maxlength=\"2\" />\n";
-echo "Dzień: <input name=\"end_day\" size=\"2\" maxlength=\"2\" />\n";
-echo "Miesiąc: <input name=\"end_month\" size=\"2\" maxlength=\"2\" />\n";
-echo "Rok: <input name=\"end_year\" size=\"4\" maxlength=\"4\" />\n";
+echo "Godzina: <input name=\"end_hour\" size=\"2\" maxlength=\"2\" value=\"$rend_time[0]\"/>\n";
+echo "Minuta: <input name=\"end_minute\" size=\"2\" maxlength=\"2\" value=\"$rend_time[1]\"/>\n";
+echo "Sekunda: <input name=\"end_second\" size=\"2\" maxlength=\"2\" value=\"$rend_time[2]\"/>\n";
+echo "Dzień: <input name=\"end_day\" size=\"2\" maxlength=\"2\" value=\"$rend_date[2]\"/>\n";
+echo "Miesiąc: <input name=\"end_month\" size=\"2\" maxlength=\"2\" value=\"$rend_date[1]\"/>\n";
+echo "Rok: <input name=\"end_year\" size=\"4\" maxlength=\"4\" value=\"$rend_date[0]\"/>\n";
 echo "<br>\n<input type=\"submit\" value=\"Zaaktualizuj dane\" />\n";
 echo "</form>\n";
 
@@ -56,8 +98,7 @@ echo "\n\t</select>\n";
 echo "\t<input type=\"submit\" value=\"Zaaktualizuj opóźnienie\" />\n";
 echo "</form>\n";
 
-$result = mysql_query($measure); // wykonanie zapytania oraz zwrocenie wynikow
-$num_data = mysql_numrows($result); // Sprawdzenie ilosci wierszy
+echo "Znaleziono $num_data/$total_data wyników";
 
 if($num_data > 0)
 {
